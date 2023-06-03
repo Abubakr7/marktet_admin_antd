@@ -90,6 +90,11 @@ const AdminLayout = () => {
               path: "/dashboard/categories",
               label: "Categories",
             },
+            {
+              icon: UploadOutlined,
+              path: "/dashboard/subCategories",
+              label: "Sub Categories",
+            },
             { icon: UserOutlined, path: "/dashboard/brands", label: "Brands" },
             { icon: UserOutlined, path: "/dashboard/users", label: "Users" },
           ].map((elem, index) => ({

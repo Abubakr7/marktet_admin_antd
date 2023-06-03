@@ -1,12 +1,17 @@
 import React from "react";
 import ReactDOM from "react-dom/client";
 import "./index.css";
-import { RouterProvider, createBrowserRouter } from "react-router-dom";
+import { Outlet, RouterProvider, createBrowserRouter } from "react-router-dom";
 import Error from "./routes/Error.jsx";
 import AdminLayout from "./layout/AdminLayout.jsx";
 import Login from "./routes/Login";
 import AuthCheck from "./utils/AuthCheck";
 import ProtectRoute from "./utils/ProtectRoute";
+import Categories from "./routes/Categories";
+import { Provider } from "react-redux";
+import { store } from "./store/store";
+import Brands from "./routes/Brands";
+import SubCategories from "./routes/SubCategories";
 
 const router = createBrowserRouter([
   {
@@ -33,15 +38,24 @@ const router = createBrowserRouter([
       },
       {
         path: "products",
-        element: <div>Hello Products</div>,
+        element: (
+          <div>
+            Hello Products
+            <Outlet />
+          </div>
+        ),
       },
       {
         path: "categories",
-        element: <div>Hello Categories</div>,
+        element: <Categories />,
+      },
+      {
+        path: "subCategories",
+        element: <SubCategories />,
       },
       {
         path: "brands",
-        element: <div>Hello Brands</div>,
+        element: <Brands />,
       },
       {
         path: "users",
@@ -51,5 +65,7 @@ const router = createBrowserRouter([
   },
 ]);
 ReactDOM.createRoot(document.getElementById("root")).render(
-  <RouterProvider router={router} />
+  <Provider store={store}>
+    <RouterProvider router={router} />
+  </Provider>
 );

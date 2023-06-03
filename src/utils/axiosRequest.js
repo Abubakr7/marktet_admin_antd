@@ -21,6 +21,15 @@ axiosRequest.interceptors.request.use(
   }
 );
 
+axiosRequest.interceptors.response.use(
+  (response) => response,
+  (error) => {
+    if (error.response.status === 401) {
+      destroyToken();
+    }
+  }
+);
+
 function saveToken(access_token, rememberMe) {
   localStorage.setItem("access_token", access_token);
   localStorage.setItem("rememberMe", JSON.stringify(rememberMe));
@@ -38,4 +47,4 @@ function destroyToken() {
   window.location.pathname = "/";
 }
 
-export { axiosRequest, axiosLogin, saveToken, destroyToken, getToken };
+export { axiosLogin, axiosRequest, destroyToken, getToken, saveToken };
