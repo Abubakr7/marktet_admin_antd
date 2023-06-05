@@ -3,10 +3,12 @@ import {
   getSubCategories,
   patchSubCategory,
   postSubCategory,
+  removeSubCategory,
 } from "../api/subCategories";
+import { message } from "antd";
 
 const setLoading = (state) => {
-  state.loading = false;
+  state.loading = true;
 };
 
 const setError = (state, action) => {
@@ -24,6 +26,7 @@ const slice = createSlice({
     builder.addCase(getSubCategories.pending, setLoading);
     builder.addCase(getSubCategories.fulfilled, (state, action) => {
       state.subCategories = action.payload;
+      state.loading = false;
     });
     builder.addCase(getSubCategories.rejected, setError);
     builder.addCase(postSubCategory.pending, setLoading);
@@ -36,6 +39,12 @@ const slice = createSlice({
       state.loading = false;
     });
     builder.addCase(patchSubCategory.rejected, setError);
+    builder.addCase(removeSubCategory.pending, setLoading);
+    builder.addCase(removeSubCategory.fulfilled, (state, action) => {
+      state.loading = false;
+      message.success("Successfully deleted!");
+    });
+    builder.addCase(removeSubCategory.rejected, setError);
   },
 });
 

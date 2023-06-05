@@ -9,46 +9,62 @@ import {
   Select,
   Table,
   Tag,
+  Image,
   Typography,
 } from "antd";
 import React, { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { getBrands } from "../api/brands";
 import { getCategories } from "../api/categories";
-import { singleFile } from "../api/files";
+import { getSubCategories } from "../api/subCategories";
+import { multiFiles, singleFile } from "../api/files";
 import {
-  getSubCategories,
-  patchSubCategory,
-  postSubCategory,
-  removeSubCategory,
-} from "../api/subCategories";
+  getProducts,
+  patchProduct,
+  postProduct,
+  removeProduct,
+} from "../api/products";
 
 const { Option } = Select;
 
 const { Title } = Typography;
 
-const SubCategories = () => {
+const Products = () => {
   const dispatch = useDispatch();
   const [addModal, setAddModal] = useState(false);
-  const loading = useSelector(({ subCategories }) => subCategories.loading);
+  const loading = useSelector(({ products }) => products.loading);
+  const [visible, setVisible] = useState(false);
   const [idx, setIdx] = useState(null);
   const [editModal, setEditModal] = useState(false);
   const [form] = Form.useForm();
   const subCategories = useSelector(
     ({ subCategories }) => subCategories.subCategories
   );
-  const [file, setFile] = useState("");
+  const products = useSelector(({ products }) => products.products);
+  const [file, setFile] = useState([]);
 
   const categories = useSelector(({ categories }) => categories.categories);
   const brands = useSelector(({ brands }) => brands.brands);
   const onFinish = async (values) => {
     if (file.length === 0) return alert("Please select img");
-    let subCategory = { ...values };
+    let product = { ...values };
     let formData = new FormData();
-    formData.append("file", file);
-    const data = await singleFile(formData);
-    subCategory.img = data.img;
-    dispatch(postSubCategory(subCategory));
+
+    for (let f of file) {
+      formData.append("files", f);
+    }
+    const data = await multiFiles(formData);
+    let arr = [];
+    for (let img of data.img) {
+      let obj = {
+        type: img.mimetype,
+        src: img.path,
+      };
+      arr.push(obj);
+    }
+
+    product.media = arr;
+    dispatch(postProduct(product));
     setAddModal(false);
   };
   const onFinishUpdate = async (values) => {
@@ -58,7 +74,7 @@ const SubCategories = () => {
     formData.append("file", file);
     const data = await singleFile(formData);
     subCategory.img = data.img;
-    dispatch(patchSubCategory({ subCategory, id: idx }));
+    dispatch(patchProduct({ subCategory, id: idx }));
     setEditModal(false);
   };
   useEffect(() => {
@@ -68,8 +84,11 @@ const SubCategories = () => {
     if (categories.length === 0) {
       dispatch(getCategories());
     }
+    if (subCategories.length === 0) {
+      dispatch(getSubCategories());
+    }
 
-    dispatch(getSubCategories());
+    dispatch(getProducts());
   }, [dispatch]);
 
   const columns = [
@@ -85,16 +104,47 @@ const SubCategories = () => {
     },
     {
       title: "Photo",
-      dataIndex: "img",
-      key: "img",
-      render: (img) => {
+      dataIndex: "media",
+      key: "media",
+
+      render: (media) => {
+        console.log(media);
         return (
-          <img
-            src={`${import.meta.env.VITE_APP_API_URL_FILES}${img}`}
-            alt="img"
-            width={60}
-            height={60}
-          />
+          <>
+            {media?.length > 0 && (
+              <Image
+                preview={{
+                  visible: false,
+                }}
+                width={60}
+                height={60}
+                src={`${import.meta.env.VITE_APP_API_URL_FILES}${media[0].src}`}
+                onClick={() => setVisible(true)}
+              />
+            )}
+            <div
+              style={{
+                display: "none",
+              }}
+            >
+              <Image.PreviewGroup
+                preview={{
+                  visible,
+                  onVisibleChange: (vis) => setVisible(vis),
+                }}
+              >
+                {media?.map((elem) => {
+                  return (
+                    <Image
+                      src={`${import.meta.env.VITE_APP_API_URL_FILES}${
+                        elem.src
+                      }`}
+                    />
+                  );
+                })}
+              </Image.PreviewGroup>
+            </div>
+          </>
         );
       },
     },
@@ -106,18 +156,27 @@ const SubCategories = () => {
         return categories?.find((elem) => elem?.id == id)?.name;
       },
     },
+
     {
-      title: "Brands",
-      dataIndex: "brands",
-      key: "brands",
+      title: "SubCategory",
+      dataIndex: "subcategoryId",
+      key: "subcategoryId",
+      render: (id, row) => {
+        console.log(row);
+        return subCategories?.find((elem) => elem?.categoryId == row.categoryId)
+          ?.name;
+      },
+    },
+
+    {
+      title: "Brand",
+      dataIndex: "brandId",
+      key: "brandId",
       render: (brand) => {
+        const name = brands?.find((elem) => elem.id === brand)?.name;
         return (
           <>
-            {brand.length > 0 &&
-              brand.map((elem) => {
-                let brand = brands.find((item) => item.id == elem);
-                return <Tag key={elem}>{brand?.name}</Tag>;
-              })}
+            <Tag>{name}</Tag>
           </>
         );
       },
@@ -153,7 +212,7 @@ const SubCategories = () => {
 
   return (
     <div>
-      <Title level={2}>Sub Categories</Title>
+      <Title level={2}>Products</Title>
       <Button type="primary" onClick={() => setAddModal(true)}>
         add
       </Button>
@@ -161,7 +220,7 @@ const SubCategories = () => {
       <Table
         loading={loading}
         rowKey={(row) => row.id}
-        dataSource={subCategories}
+        dataSource={products}
         columns={columns}
       />
       <Modal
@@ -203,7 +262,7 @@ const SubCategories = () => {
                 },
               ]}
             >
-              {categories.length > 0 &&
+              {categories?.length > 0 &&
                 categories.map((elem) => {
                   return (
                     <Option key={elem.id} value={elem.id}>
@@ -213,9 +272,30 @@ const SubCategories = () => {
                 })}
             </Select>
           </Form.Item>
+          <Form.Item label="Category" name="categoryId">
+            <Select
+              placeholder="Please select category"
+              hasFeedback
+              rules={[
+                {
+                  required: true,
+                  message: "Please select category!",
+                },
+              ]}
+            >
+              {subCategories.length > 0 &&
+                subCategories.map((elem) => {
+                  return (
+                    <Option key={elem.id} value={elem.id}>
+                      {elem.name}
+                    </Option>
+                  );
+                })}
+            </Select>
+          </Form.Item>
           <Form.Item label="Brands" name="brands">
-            <Select mode="multiple" placeholder="Please select brand">
-              {brands.length > 0 &&
+            <Select placeholder="Please select brand">
+              {brands?.length > 0 &&
                 brands.map((elem) => {
                   return (
                     <Option key={elem.id} value={elem.id}>
@@ -228,8 +308,9 @@ const SubCategories = () => {
           <input
             type="file"
             name="file"
+            multiple
             onChange={(e) => {
-              setFile(e.target.files[0]);
+              setFile(e.target.files);
             }}
           />
 
@@ -283,7 +364,7 @@ const SubCategories = () => {
                 },
               ]}
             >
-              {categories.length > 0 &&
+              {categories?.length > 0 &&
                 categories.map((elem) => {
                   return (
                     <Option key={elem.id} value={elem.id}>
@@ -293,9 +374,30 @@ const SubCategories = () => {
                 })}
             </Select>
           </Form.Item>
+          <Form.Item label="Category" name="categoryId">
+            <Select
+              placeholder="Please select category"
+              hasFeedback
+              rules={[
+                {
+                  required: true,
+                  message: "Please select category!",
+                },
+              ]}
+            >
+              {subCategories.length > 0 &&
+                subCategories.map((elem) => {
+                  return (
+                    <Option key={elem.id} value={elem.id}>
+                      {elem.name}
+                    </Option>
+                  );
+                })}
+            </Select>
+          </Form.Item>
           <Form.Item label="Brands" name="brands">
-            <Select mode="multiple" placeholder="Please select brand">
-              {brands.length > 0 &&
+            <Select placeholder="Please select brand">
+              {brands?.length > 0 &&
                 brands.map((elem) => {
                   return (
                     <Option key={elem.id} value={elem.id}>
@@ -308,8 +410,9 @@ const SubCategories = () => {
           <input
             type="file"
             name="file"
+            multiple
             onChange={(e) => {
-              setFile(e.target.files[0]);
+              setFile(e.target.files);
             }}
           />
           <Form.Item
@@ -328,4 +431,4 @@ const SubCategories = () => {
   );
 };
 
-export default SubCategories;
+export default Products;

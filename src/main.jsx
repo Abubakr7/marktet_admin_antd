@@ -12,6 +12,8 @@ import { Provider } from "react-redux";
 import { store } from "./store/store";
 import Brands from "./routes/Brands";
 import SubCategories from "./routes/SubCategories";
+import Users from "./routes/Users";
+import Products from "./routes/Products";
 
 const router = createBrowserRouter([
   {
@@ -38,12 +40,7 @@ const router = createBrowserRouter([
       },
       {
         path: "products",
-        element: (
-          <div>
-            Hello Products
-            <Outlet />
-          </div>
-        ),
+        element: <Products />,
       },
       {
         path: "categories",
@@ -59,7 +56,7 @@ const router = createBrowserRouter([
       },
       {
         path: "users",
-        element: <div>Hello Users</div>,
+        element: <Users />,
       },
     ],
   },
