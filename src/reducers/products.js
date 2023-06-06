@@ -13,7 +13,9 @@ const setLoading = (state) => {
 
 const setError = (state, action) => {
   state.loading = false;
+  console.log(1);
   state.error = action.payload;
+  message.error("Something went wrong");
 };
 const slice = createSlice({
   name: "products",

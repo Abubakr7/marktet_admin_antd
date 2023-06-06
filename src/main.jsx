@@ -14,6 +14,8 @@ import Brands from "./routes/Brands";
 import SubCategories from "./routes/SubCategories";
 import Users from "./routes/Users";
 import Products from "./routes/Products";
+import ProductsLayout from "./routes/ProductsLayout";
+import AddProduct from "./components/AddProduct";
 
 const router = createBrowserRouter([
   {
@@ -40,7 +42,17 @@ const router = createBrowserRouter([
       },
       {
         path: "products",
-        element: <Products />,
+        element: <ProductsLayout />,
+        children: [
+          {
+            index: true,
+            element: <Products />,
+          },
+          {
+            path: "add",
+            element: <AddProduct />,
+          },
+        ],
       },
       {
         path: "categories",

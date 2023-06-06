@@ -1,5 +1,6 @@
 import { createAsyncThunk } from "@reduxjs/toolkit";
 import { axiosRequest } from "../utils/axiosRequest";
+import { message } from "antd";
 
 export const getProducts = createAsyncThunk(
   "products/getProducts",
@@ -16,15 +17,17 @@ export const getProducts = createAsyncThunk(
 
 export const postProduct = createAsyncThunk(
   "products/postProduct",
-  async (subCategory, { rejectWithValue, dispatch }) => {
+  async ({ product, callback }, { rejectWithValue, dispatch }) => {
     try {
-      const response = await axiosRequest.post("products", subCategory);
+      const response = await axiosRequest.post("productss", product);
       if (!response.ok) {
         return rejectWithValue(response.status);
       }
       dispatch(getProducts());
+      callback();
       return response.data;
     } catch (err) {
+      message.error("Something went wrong");
       rejectWithValue(err);
     }
   }

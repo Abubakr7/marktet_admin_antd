@@ -27,6 +27,7 @@ import {
 import ReactQuill from "react-quill";
 import "react-quill/dist/quill.snow.css";
 import "react-quill/dist/quill.bubble.css";
+import { useLocation, useNavigate } from "react-router-dom";
 
 const { Option } = Select;
 
@@ -34,6 +35,8 @@ const { Title } = Typography;
 
 const Products = () => {
   const dispatch = useDispatch();
+  const { pathname } = useLocation();
+  const navigate = useNavigate();
   const [addModal, setAddModal] = useState(false);
   const loading = useSelector(({ products }) => products.loading);
   const [visible, setVisible] = useState(false);
@@ -237,7 +240,7 @@ const Products = () => {
             />
             <Popconfirm
               title="Sure to delete?"
-              onConfirm={() => dispatch(removeSubCategory(row.id))}
+              onConfirm={() => dispatch(removeProduct(row.id))}
             >
               <DeleteFilled style={{ cursor: "pointer", fontSize: 25 }} />
             </Popconfirm>
@@ -253,8 +256,7 @@ const Products = () => {
       <Button
         type="primary"
         onClick={() => {
-          setAddModal(true);
-          setValue("");
+          navigate(`${pathname}/add`);
         }}
       >
         add
