@@ -42,6 +42,7 @@ const Products = () => {
   );
   const products = useSelector(({ products }) => products.products);
   const [file, setFile] = useState([]);
+  const [updateFiles, setUpdateFiles] = useState([]);
 
   const categories = useSelector(({ categories }) => categories.categories);
   const brands = useSelector(({ brands }) => brands.brands);
@@ -68,13 +69,31 @@ const Products = () => {
     setAddModal(false);
   };
   const onFinishUpdate = async (values) => {
-    if (file.length === 0) return alert("Please select img");
-    let subCategory = { ...values };
-    let formData = new FormData();
-    formData.append("file", file);
-    const data = await singleFile(formData);
-    subCategory.img = data.img;
-    dispatch(patchProduct({ subCategory, id: idx }));
+    let product = { ...values };
+    if (file.length > 0) {
+      let formData = new FormData();
+
+      for (let f of file) {
+        formData.append("files", f);
+      }
+      const data = await multiFiles(formData);
+      let arr = [...updateFiles];
+      for (let img of data.img) {
+        let obj = {
+          type: img.mimetype,
+          src: img.path,
+        };
+        arr.push(obj);
+      }
+
+      product.media = arr;
+      dispatch(patchProduct({ product, id: idx }));
+      setEditModal(false);
+      return;
+    }
+    console.log(updateFiles);
+    product.media = updateFiles;
+    dispatch(patchProduct({ product, id: idx }));
     setEditModal(false);
   };
   useEffect(() => {
@@ -173,6 +192,7 @@ const Products = () => {
       dataIndex: "brandId",
       key: "brandId",
       render: (brand) => {
+        console.log(brand);
         const name = brands?.find((elem) => elem.id === brand)?.name;
         return (
           <>
@@ -192,9 +212,11 @@ const Products = () => {
                 form.setFieldsValue({
                   name: row.name,
                   categoryId: row.categoryId,
-                  brands: row.brands,
+                  subCategoryId: row.subCategoryId,
+                  brandId: row.brandId,
                 });
                 setIdx(row.id);
+                setUpdateFiles(row.media);
                 setEditModal(true);
               }}
             />
@@ -272,7 +294,7 @@ const Products = () => {
                 })}
             </Select>
           </Form.Item>
-          <Form.Item label="Category" name="categoryId">
+          <Form.Item label="Category" name="subCategoryId">
             <Select
               placeholder="Please select category"
               hasFeedback
@@ -293,7 +315,7 @@ const Products = () => {
                 })}
             </Select>
           </Form.Item>
-          <Form.Item label="Brands" name="brands">
+          <Form.Item label="Brand" name="brandId">
             <Select placeholder="Please select brand">
               {brands?.length > 0 &&
                 brands.map((elem) => {
@@ -374,7 +396,7 @@ const Products = () => {
                 })}
             </Select>
           </Form.Item>
-          <Form.Item label="Category" name="categoryId">
+          <Form.Item label="Sub Category" name="subCategoryId">
             <Select
               placeholder="Please select category"
               hasFeedback
@@ -395,7 +417,7 @@ const Products = () => {
                 })}
             </Select>
           </Form.Item>
-          <Form.Item label="Brands" name="brands">
+          <Form.Item label="Brand" name="brandId">
             <Select placeholder="Please select brand">
               {brands?.length > 0 &&
                 brands.map((elem) => {
