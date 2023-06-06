@@ -24,6 +24,9 @@ import {
   postProduct,
   removeProduct,
 } from "../api/products";
+import ReactQuill from "react-quill";
+import "react-quill/dist/quill.snow.css";
+import "react-quill/dist/quill.bubble.css";
 
 const { Option } = Select;
 
@@ -40,6 +43,7 @@ const Products = () => {
   const subCategories = useSelector(
     ({ subCategories }) => subCategories.subCategories
   );
+  const [value, setValue] = useState("");
   const products = useSelector(({ products }) => products.products);
   const [file, setFile] = useState([]);
   const [updateFiles, setUpdateFiles] = useState([]);
@@ -49,6 +53,7 @@ const Products = () => {
   const onFinish = async (values) => {
     if (file.length === 0) return alert("Please select img");
     let product = { ...values };
+    product.description = value;
     let formData = new FormData();
 
     for (let f of file) {
@@ -70,6 +75,8 @@ const Products = () => {
   };
   const onFinishUpdate = async (values) => {
     let product = { ...values };
+    product.description = value;
+
     if (file.length > 0) {
       let formData = new FormData();
 
@@ -175,7 +182,14 @@ const Products = () => {
         return categories?.find((elem) => elem?.id == id)?.name;
       },
     },
-
+    {
+      title: "Description",
+      dataIndex: "description",
+      key: "description",
+      render: (desc) => {
+        return <ReactQuill theme="bubble" readOnly value={desc} />;
+      },
+    },
     {
       title: "SubCategory",
       dataIndex: "subcategoryId",
@@ -217,6 +231,7 @@ const Products = () => {
                 });
                 setIdx(row.id);
                 setUpdateFiles(row.media);
+                setValue(row.description || "");
                 setEditModal(true);
               }}
             />
@@ -235,7 +250,13 @@ const Products = () => {
   return (
     <div>
       <Title level={2}>Products</Title>
-      <Button type="primary" onClick={() => setAddModal(true)}>
+      <Button
+        type="primary"
+        onClick={() => {
+          setAddModal(true);
+          setValue("");
+        }}
+      >
         add
       </Button>
       <Divider />
@@ -330,10 +351,17 @@ const Products = () => {
           <input
             type="file"
             name="file"
+            style={{ marginBottom: 10 }}
             multiple
             onChange={(e) => {
               setFile(e.target.files);
             }}
+          />
+          <ReactQuill
+            theme="snow"
+            style={{ marginBottom: 10 }}
+            value={value}
+            onChange={setValue}
           />
 
           <Form.Item
@@ -437,6 +465,7 @@ const Products = () => {
               setFile(e.target.files);
             }}
           />
+          <ReactQuill theme="snow" value={value} onChange={setValue} />
           <Form.Item
             wrapperCol={{
               offset: 8,
