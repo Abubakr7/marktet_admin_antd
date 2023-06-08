@@ -42,7 +42,8 @@ const Products = () => {
   const loading = useSelector(({ products }) => products.loading);
   const [visible, setVisible] = useState(false);
   const [idx, setIdx] = useState(null);
-  const [editModal, setEditModal] = useState(false);
+  const [infoModal, setInfoModal] = useState(false);
+  const [properties, setProperties] = useState(null);
   const [form] = Form.useForm();
   const subCategories = useSelector(
     ({ subCategories }) => subCategories.subCategories
@@ -134,6 +135,22 @@ const Products = () => {
       title: "Name",
       dataIndex: "name",
       key: "name",
+    },
+    {
+      title: "Properties",
+      render: (row) => {
+        return (
+          <Button
+            onClick={() => {
+              setInfoModal(true);
+              const { proc, sputnik } = row;
+              setProperties({ proc, sputnik });
+            }}
+          >
+            info
+          </Button>
+        );
+      },
     },
     {
       title: "Photo",
@@ -394,106 +411,45 @@ const Products = () => {
         </Form>
       </Modal>
       <Modal
-        title="Edit Modal"
-        open={editModal}
+        title="Info Modal"
+        open={infoModal}
         footer={false}
+        width={"100vw"}
         getContainer={false}
-        onCancel={() => setEditModal(false)}
+        onCancel={() => setInfoModal(false)}
         destroyOnClose
       >
-        <Form
-          form={form}
-          name="edit"
-          onFinish={onFinishUpdate}
-          autoComplete="off"
-        >
-          <Form.Item
-            label="Name"
-            name="name"
-            hasFeedback
-            rules={[
-              {
-                required: true,
-                message: "Please input your name of Brand!",
-              },
-            ]}
-          >
-            <Input />
-          </Form.Item>
-          <Form.Item label="Category" name="categoryId">
-            <Select
-              placeholder="Please select category"
-              hasFeedback
-              rules={[
-                {
-                  required: true,
-                  message: "Please select category!",
-                },
-              ]}
-            >
-              {categories?.length > 0 &&
-                categories.map((elem) => {
-                  return (
-                    <Option key={elem.id} value={elem.id}>
-                      {elem.name}
-                    </Option>
-                  );
-                })}
-            </Select>
-          </Form.Item>
-          <Form.Item label="Sub Category" name="subCategoryId">
-            <Select
-              placeholder="Please select category"
-              hasFeedback
-              rules={[
-                {
-                  required: true,
-                  message: "Please select category!",
-                },
-              ]}
-            >
-              {subCategories.length > 0 &&
-                subCategories.map((elem) => {
-                  return (
-                    <Option key={elem.id} value={elem.id}>
-                      {elem.name}
-                    </Option>
-                  );
-                })}
-            </Select>
-          </Form.Item>
-          <Form.Item label="Brand" name="brandId">
-            <Select placeholder="Please select brand">
-              {brands?.length > 0 &&
-                brands.map((elem) => {
-                  return (
-                    <Option key={elem.id} value={elem.id}>
-                      {elem.name}
-                    </Option>
-                  );
-                })}
-            </Select>
-          </Form.Item>
-          <input
-            type="file"
-            name="file"
-            multiple
-            onChange={(e) => {
-              setFile(e.target.files);
-            }}
-          />
-          <ReactQuill theme="snow" value={value} onChange={setValue} />
-          <Form.Item
-            wrapperCol={{
-              offset: 8,
-              span: 16,
-            }}
-          >
-            <Button type="primary" htmlType="submit">
-              Submit
-            </Button>
-          </Form.Item>
-        </Form>
+        <Title level={4}>Характеристики</Title>
+        <div style={{ display: "flex", gap: 10 }}>
+          <Title level={5}>Процессор и память</Title>
+          {properties?.proc?.length > 0 && (
+            <table border={1}>
+              {properties.proc.map((elem) => {
+                return (
+                  <tr key={elem.key}>
+                    <td>{elem.key}</td>
+                    <td>{elem.value}</td>
+                  </tr>
+                );
+              })}
+            </table>
+          )}
+        </div>
+        <div style={{ display: "flex", gap: 10 }}>
+          <Title level={5}>Спутниковая навигация</Title>
+          {properties?.sputnik?.length > 0 && (
+            <table border={1}>
+              {properties.sputnik.map((elem) => {
+                return (
+                  <tr key={elem.key}>
+                    <td>{elem.key}</td>
+                    <td>{elem.value}</td>
+                  </tr>
+                );
+              })}
+            </table>
+          )}
+        </div>
       </Modal>
     </div>
   );

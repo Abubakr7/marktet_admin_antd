@@ -1,6 +1,7 @@
-import { Button, Form, Input, Select, Typography } from "antd";
+import { Button, Form, Input, Select, Space, Typography } from "antd";
 import React, { useEffect } from "react";
 import ReactQuill from "react-quill";
+import { MinusCircleOutlined, PlusOutlined } from "@ant-design/icons";
 import "react-quill/dist/quill.bubble.css";
 import "react-quill/dist/quill.snow.css";
 
@@ -100,6 +101,115 @@ const EditProduct = (props) => {
               })}
           </Select>
         </Form.Item>
+
+        <h1>Sputnik</h1>
+        <Form.List name="sputnik">
+          {(fields, { add, remove }) => (
+            <>
+              {fields.map(({ key, name, ...restField }) => (
+                <Space
+                  key={key}
+                  style={{
+                    display: "flex",
+                    marginBottom: 8,
+                  }}
+                  align="baseline"
+                >
+                  <Form.Item
+                    {...restField}
+                    name={[name, "key"]}
+                    rules={[
+                      {
+                        required: true,
+                        message: "Missing key",
+                      },
+                    ]}
+                  >
+                    <Input placeholder="key" />
+                  </Form.Item>
+                  <Form.Item
+                    {...restField}
+                    name={[name, "value"]}
+                    rules={[
+                      {
+                        required: true,
+                        message: "Missing value",
+                      },
+                    ]}
+                  >
+                    <Input placeholder="value" />
+                  </Form.Item>
+                  <MinusCircleOutlined onClick={() => remove(name)} />
+                </Space>
+              ))}
+              <Form.Item>
+                <Button
+                  type="dashed"
+                  onClick={() => add()}
+                  block
+                  icon={<PlusOutlined />}
+                >
+                  Add field
+                </Button>
+              </Form.Item>
+            </>
+          )}
+        </Form.List>
+
+        <h1>Proccessor</h1>
+        <Form.List name="proc">
+          {(fields, { add, remove }) => (
+            <>
+              {fields.map(({ key, name, ...restField }) => (
+                <Space
+                  key={key}
+                  style={{
+                    display: "flex",
+                    marginBottom: 8,
+                  }}
+                  align="baseline"
+                >
+                  <Form.Item
+                    {...restField}
+                    name={[name, "key"]}
+                    rules={[
+                      {
+                        required: true,
+                        message: "Missing key",
+                      },
+                    ]}
+                  >
+                    <Input placeholder="key" />
+                  </Form.Item>
+                  <Form.Item
+                    {...restField}
+                    name={[name, "value"]}
+                    rules={[
+                      {
+                        required: true,
+                        message: "Missing value",
+                      },
+                    ]}
+                  >
+                    <Input placeholder="value" />
+                  </Form.Item>
+                  <MinusCircleOutlined onClick={() => remove(name)} />
+                </Space>
+              ))}
+              <Form.Item>
+                <Button
+                  type="dashed"
+                  onClick={() => add()}
+                  block
+                  icon={<PlusOutlined />}
+                >
+                  Add field
+                </Button>
+              </Form.Item>
+            </>
+          )}
+        </Form.List>
+
         <input
           type="file"
           name="file"

@@ -1,6 +1,7 @@
-import { Button, Col, Form, Input, Row, Select, Typography } from "antd";
+import { Button, Col, Form, Input, Row, Select, Space, Typography } from "antd";
 import React, { useEffect, useState } from "react";
 import ReactQuill from "react-quill";
+import { MinusCircleOutlined, PlusOutlined } from "@ant-design/icons";
 import "react-quill/dist/quill.bubble.css";
 import "react-quill/dist/quill.snow.css";
 import { useDispatch, useSelector } from "react-redux";
@@ -14,6 +15,36 @@ import { getSubCategories } from "../api/subCategories";
 const { Option } = Select;
 
 const { Title } = Typography;
+const formItemLayout = {
+  labelCol: {
+    xs: {
+      span: 24,
+    },
+    sm: {
+      span: 4,
+    },
+  },
+  wrapperCol: {
+    xs: {
+      span: 24,
+    },
+    sm: {
+      span: 20,
+    },
+  },
+};
+const formItemLayoutWithOutLabel = {
+  wrapperCol: {
+    xs: {
+      span: 24,
+      offset: 0,
+    },
+    sm: {
+      span: 20,
+      offset: 4,
+    },
+  },
+};
 
 const AddProduct = () => {
   const dispatch = useDispatch();
@@ -27,6 +58,7 @@ const AddProduct = () => {
   const categories = useSelector(({ categories }) => categories.categories);
   const brands = useSelector(({ brands }) => brands.brands);
   const onFinish = async (values) => {
+    console.log(values);
     if (file.length === 0) return alert("Please select img");
     let product = { ...values };
     product.description = value;
@@ -154,6 +186,116 @@ const AddProduct = () => {
                   })}
               </Select>
             </Form.Item>
+          </Col>
+          <Col span={12}>
+            <h1>Proccesor</h1>
+            <Form.List name="proc">
+              {(fields, { add, remove }) => (
+                <>
+                  {fields.map(({ key, name, ...restField }) => (
+                    <Space
+                      key={key}
+                      style={{
+                        display: "flex",
+                        marginBottom: 8,
+                      }}
+                      align="baseline"
+                    >
+                      <Form.Item
+                        {...restField}
+                        name={[name, "key"]}
+                        rules={[
+                          {
+                            required: true,
+                            message: "Missing key",
+                          },
+                        ]}
+                      >
+                        <Input placeholder="key" />
+                      </Form.Item>
+                      <Form.Item
+                        {...restField}
+                        name={[name, "value"]}
+                        rules={[
+                          {
+                            required: true,
+                            message: "Missing value",
+                          },
+                        ]}
+                      >
+                        <Input placeholder="value" />
+                      </Form.Item>
+                      <MinusCircleOutlined onClick={() => remove(name)} />
+                    </Space>
+                  ))}
+                  <Form.Item>
+                    <Button
+                      type="dashed"
+                      onClick={() => add()}
+                      block
+                      icon={<PlusOutlined />}
+                    >
+                      Add field
+                    </Button>
+                  </Form.Item>
+                </>
+              )}
+            </Form.List>
+          </Col>
+          <Col span={12}>
+            <h1>Sputnik</h1>
+            <Form.List name="sputnik">
+              {(fields, { add, remove }) => (
+                <>
+                  {fields.map(({ key, name, ...restField }) => (
+                    <Space
+                      key={key}
+                      style={{
+                        display: "flex",
+                        marginBottom: 8,
+                      }}
+                      align="baseline"
+                    >
+                      <Form.Item
+                        {...restField}
+                        name={[name, "key"]}
+                        rules={[
+                          {
+                            required: true,
+                            message: "Missing key",
+                          },
+                        ]}
+                      >
+                        <Input placeholder="key" />
+                      </Form.Item>
+                      <Form.Item
+                        {...restField}
+                        name={[name, "value"]}
+                        rules={[
+                          {
+                            required: true,
+                            message: "Missing value",
+                          },
+                        ]}
+                      >
+                        <Input placeholder="value" />
+                      </Form.Item>
+                      <MinusCircleOutlined onClick={() => remove(name)} />
+                    </Space>
+                  ))}
+                  <Form.Item>
+                    <Button
+                      type="dashed"
+                      onClick={() => add()}
+                      block
+                      icon={<PlusOutlined />}
+                    >
+                      Add field
+                    </Button>
+                  </Form.Item>
+                </>
+              )}
+            </Form.List>
           </Col>
         </Row>
 
