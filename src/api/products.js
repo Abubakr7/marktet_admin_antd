@@ -19,8 +19,8 @@ export const postProduct = createAsyncThunk(
   "products/postProduct",
   async ({ product, callback }, { rejectWithValue, dispatch }) => {
     try {
-      const response = await axiosRequest.post("productss", product);
-      if (!response.ok) {
+      const response = await axiosRequest.post("products", product);
+      if (!response.statusCode >= 400) {
         return rejectWithValue(response.status);
       }
       dispatch(getProducts());
@@ -35,12 +35,15 @@ export const postProduct = createAsyncThunk(
 
 export const patchProduct = createAsyncThunk(
   "products/patchProduct",
-  async ({ product, id }, { rejectWithValue, dispatch }) => {
+  async ({ product, id, callback }, { rejectWithValue, dispatch }) => {
     try {
       const response = await axiosRequest.patch(`products/${id}`, product);
 
+      if (!response.statusCode >= 400) {
+        return rejectWithValue(response.status);
+      }
       dispatch(getProducts());
-      return response.data;
+      callback();
     } catch (err) {
       rejectWithValue(err);
     }
@@ -55,6 +58,19 @@ export const removeProduct = createAsyncThunk(
       dispatch(getProducts());
       return response.data;
     } catch (err) {
+      rejectWithValue(err);
+    }
+  }
+);
+
+export const getProductById = createAsyncThunk(
+  "products/getProductById",
+  async (id, { rejectWithValue }) => {
+    try {
+      const { data } = await axiosRequest.get(`products/${id}`);
+
+      return data;
+    } catch (error) {
       rejectWithValue(err);
     }
   }

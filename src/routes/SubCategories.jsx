@@ -52,7 +52,12 @@ const SubCategories = () => {
     setAddModal(false);
   };
   const onFinishUpdate = async (values) => {
-    if (file.length === 0) return alert("Please select img");
+    if (file.length === 0) {
+      let subCategory = { ...values };
+      dispatch(patchSubCategory({ subCategory, id: idx }));
+      setEditModal(false);
+      return;
+    }
     let subCategory = { ...values };
     let formData = new FormData();
     formData.append("file", file);

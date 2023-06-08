@@ -1,5 +1,6 @@
 import { createSlice } from "@reduxjs/toolkit";
 import {
+  getProductById,
   getProducts,
   patchProduct,
   postProduct,
@@ -13,7 +14,6 @@ const setLoading = (state) => {
 
 const setError = (state, action) => {
   state.loading = false;
-  console.log(1);
   state.error = action.payload;
   message.error("Something went wrong");
 };
@@ -21,6 +21,7 @@ const slice = createSlice({
   name: "products",
   initialState: {
     products: [],
+    product: {},
     loading: false,
     error: null,
   },
@@ -47,6 +48,12 @@ const slice = createSlice({
       message.success("Successfully deleted!");
     });
     builder.addCase(removeProduct.rejected, setError);
+    builder.addCase(getProductById.pending, setLoading);
+    builder.addCase(getProductById.fulfilled, (state, action) => {
+      state.loading = false;
+      state.product = action.payload;
+    });
+    builder.addCase(getProductById.rejected, setError);
   },
 });
 

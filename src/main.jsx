@@ -16,6 +16,7 @@ import Users from "./routes/Users";
 import Products from "./routes/Products";
 import ProductsLayout from "./routes/ProductsLayout";
 import AddProduct from "./components/AddProduct";
+import EditProduct from "./routes/EditProduct";
 
 const router = createBrowserRouter([
   {
@@ -51,6 +52,10 @@ const router = createBrowserRouter([
           {
             path: "add",
             element: <AddProduct />,
+          },
+          {
+            path: "edit/:id",
+            element: <EditProduct />,
           },
         ],
       },

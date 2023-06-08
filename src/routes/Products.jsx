@@ -226,16 +226,17 @@ const Products = () => {
             <EditFilled
               style={{ cursor: "pointer", fontSize: 25, marginRight: 5 }}
               onClick={() => {
-                form.setFieldsValue({
-                  name: row.name,
-                  categoryId: row.categoryId,
-                  subCategoryId: row.subCategoryId,
-                  brandId: row.brandId,
-                });
-                setIdx(row.id);
-                setUpdateFiles(row.media);
-                setValue(row.description || "");
-                setEditModal(true);
+                // form.setFieldsValue({
+                //   name: row.name,
+                //   categoryId: row.categoryId,
+                //   subCategoryId: row.subCategoryId,
+                //   brandId: row.brandId,
+                // });
+                // setIdx(row.id);
+                // setUpdateFiles(row.media);
+                // setValue(row.description || "");
+                // setEditModal(true);
+                navigate(`${pathname}/edit/${row.id}`);
               }}
             />
             <Popconfirm
