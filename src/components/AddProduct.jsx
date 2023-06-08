@@ -1,4 +1,14 @@
-import { Button, Col, Form, Input, Row, Select, Space, Typography } from "antd";
+import {
+  Button,
+  Col,
+  Form,
+  Input,
+  Row,
+  Select,
+  Space,
+  Tag,
+  Typography,
+} from "antd";
 import React, { useEffect, useState } from "react";
 import ReactQuill from "react-quill";
 import { MinusCircleOutlined, PlusOutlined } from "@ant-design/icons";
@@ -15,36 +25,6 @@ import { getSubCategories } from "../api/subCategories";
 const { Option } = Select;
 
 const { Title } = Typography;
-const formItemLayout = {
-  labelCol: {
-    xs: {
-      span: 24,
-    },
-    sm: {
-      span: 4,
-    },
-  },
-  wrapperCol: {
-    xs: {
-      span: 24,
-    },
-    sm: {
-      span: 20,
-    },
-  },
-};
-const formItemLayoutWithOutLabel = {
-  wrapperCol: {
-    xs: {
-      span: 24,
-      offset: 0,
-    },
-    sm: {
-      span: 20,
-      offset: 4,
-    },
-  },
-};
 
 const AddProduct = () => {
   const dispatch = useDispatch();
@@ -53,15 +33,16 @@ const AddProduct = () => {
   const subCategories = useSelector(
     ({ subCategories }) => subCategories.subCategories
   );
+  const [colors, setColors] = useState([]);
   const [value, setValue] = useState("");
   const [file, setFile] = useState([]);
   const categories = useSelector(({ categories }) => categories.categories);
   const brands = useSelector(({ brands }) => brands.brands);
   const onFinish = async (values) => {
-    console.log(values);
     if (file.length === 0) return alert("Please select img");
     let product = { ...values };
     product.description = value;
+    product.colors = colors;
     let formData = new FormData();
 
     for (let f of file) {
@@ -186,6 +167,41 @@ const AddProduct = () => {
                   })}
               </Select>
             </Form.Item>
+          </Col>
+          <Col span={6}>
+            {colors.length > 0 &&
+              colors.map((elem) => {
+                return (
+                  <Tag
+                    key={elem}
+                    closable
+                    style={{ background: elem }}
+                    onClose={() => {
+                      const co = colors.filter((el) => el !== elem);
+                      setColors(co);
+                    }}
+                  >
+                    {elem}
+                  </Tag>
+                );
+              })}
+            <form
+              onSubmit={(e) => {
+                e.stopPropagation();
+                e.preventDefault();
+              }}
+            >
+              <input
+                type="text"
+                name="color"
+                onBlur={(e) => {
+                  const target = e.target;
+                  const co = [...colors];
+                  co.push(target.value);
+                  setColors(co);
+                }}
+              />
+            </form>
           </Col>
           <Col span={12}>
             <h1>Proccesor</h1>
