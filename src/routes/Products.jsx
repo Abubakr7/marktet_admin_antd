@@ -11,6 +11,7 @@ import {
   Tag,
   Image,
   Typography,
+  Carousel,
 } from "antd";
 import React, { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
@@ -106,6 +107,9 @@ const Products = () => {
     dispatch(patchProduct({ product, id: idx }));
     setEditModal(false);
   };
+  const onChange = (currentSlide) => {
+    console.log(currentSlide);
+  };
   useEffect(() => {
     if (brands.length === 0) {
       dispatch(getBrands());
@@ -137,10 +141,29 @@ const Products = () => {
       key: "media",
 
       render: (media) => {
-        console.log(media);
+        console.log(media.length);
         return (
           <>
-            {media?.length > 0 && (
+            {media.length > 0 && (
+              <div style={{ width: "100px", height: "100px" }}>
+                <Carousel afterChange={onChange}>
+                  {media.map((elem) => {
+                    return (
+                      <div key={elem.src}>
+                        <img
+                          src={`${import.meta.env.VITE_APP_API_URL_FILES}${
+                            elem.src
+                          }`}
+                          alt="photo"
+                          style={{ maxWidth: "100%" }}
+                        />
+                      </div>
+                    );
+                  })}
+                </Carousel>
+              </div>
+            )}
+            {/* {media?.length > 0 && (
               <Image
                 preview={{
                   visible: false,
@@ -165,6 +188,7 @@ const Products = () => {
                 {media?.map((elem) => {
                   return (
                     <Image
+                      key={elem.src}
                       src={`${import.meta.env.VITE_APP_API_URL_FILES}${
                         elem.src
                       }`}
@@ -172,7 +196,7 @@ const Products = () => {
                   );
                 })}
               </Image.PreviewGroup>
-            </div>
+            </div> */}
           </>
         );
       },
@@ -195,12 +219,10 @@ const Products = () => {
     },
     {
       title: "SubCategory",
-      dataIndex: "subcategoryId",
-      key: "subcategoryId",
-      render: (id, row) => {
-        console.log(row);
-        return subCategories?.find((elem) => elem?.categoryId == row.categoryId)
-          ?.name;
+      dataIndex: "subCategoryId",
+      key: "subCategoryId",
+      render: (id) => {
+        return subCategories?.find((elem) => elem?.id == id)?.name;
       },
     },
 
@@ -226,17 +248,9 @@ const Products = () => {
             <EditFilled
               style={{ cursor: "pointer", fontSize: 25, marginRight: 5 }}
               onClick={() => {
-                // form.setFieldsValue({
-                //   name: row.name,
-                //   categoryId: row.categoryId,
-                //   subCategoryId: row.subCategoryId,
-                //   brandId: row.brandId,
-                // });
-                // setIdx(row.id);
-                // setUpdateFiles(row.media);
-                // setValue(row.description || "");
-                // setEditModal(true);
-                navigate(`${pathname}/edit/${row.id}`);
+                navigate(`${pathname}/edit/${row.id}`, {
+                  state: row,
+                });
               }}
             />
             <Popconfirm

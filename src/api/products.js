@@ -65,10 +65,10 @@ export const removeProduct = createAsyncThunk(
 
 export const getProductById = createAsyncThunk(
   "products/getProductById",
-  async (id, { rejectWithValue }) => {
+  async ({ id, callback }, { rejectWithValue }) => {
     try {
       const { data } = await axiosRequest.get(`products/${id}`);
-
+      callback(data);
       return data;
     } catch (error) {
       rejectWithValue(err);

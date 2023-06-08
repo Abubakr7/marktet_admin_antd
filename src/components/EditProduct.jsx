@@ -21,7 +21,7 @@ const EditProduct = (props) => {
   } = props;
   const [form] = Form.useForm();
 
-  if (!product.name) return null;
+  // if (!product.name) return null;
 
   return (
     <div>

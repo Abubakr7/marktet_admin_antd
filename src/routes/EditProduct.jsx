@@ -12,10 +12,10 @@ import { useEffect } from "react";
 
 const EditProduct = () => {
   const dispatch = useDispatch();
-  const product = useSelector(({ products }) => products.product);
+  const { state } = useLocation();
   const navigate = useNavigate();
-  const [value, setValue] = useState("");
-  const [updateFiles, setUpdateFiles] = useState([]);
+  const [value, setValue] = useState(state.description);
+  const [updateFiles, setUpdateFiles] = useState(state.media);
   const subCategories = useSelector(
     ({ subCategories }) => subCategories.subCategories
   );
@@ -70,21 +70,15 @@ const EditProduct = () => {
   };
 
   useEffect(() => {
-    dispatch(getProductById(id));
     dispatch(getBrands());
     dispatch(getCategories());
     dispatch(getSubCategories());
-    if (product.name) {
-      setUpdateFiles(product.media);
-      setValue(product.description);
-    }
-  }, [dispatch, id, product]);
-  if (!product.name) return null;
+  }, [dispatch, id]);
   return (
     <div>
       <View
         onFinishUpdate={onFinishUpdate}
-        product={product}
+        product={state}
         categories={categories}
         subCategories={subCategories}
         brands={brands}
